@@ -8,12 +8,6 @@ import (
 	"github.com/kcaashish/gotodo"
 )
 
-func NewUserStore(db *sqlx.DB) *UserStore {
-	return &UserStore{
-		DB: db,
-	}
-}
-
 type UserStore struct {
 	*sqlx.DB
 }

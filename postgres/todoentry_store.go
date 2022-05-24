@@ -8,12 +8,6 @@ import (
 	"github.com/kcaashish/gotodo"
 )
 
-func NewTodoEntryStore(db *sqlx.DB) *TodoEntryStore {
-	return &TodoEntryStore{
-		DB: db,
-	}
-}
-
 type TodoEntryStore struct {
 	*sqlx.DB
 }
