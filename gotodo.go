@@ -36,6 +36,14 @@ type TodoEntry struct {
 	Completed   bool      `db:"completed"`
 }
 
+type UserStore interface {
+	User(id uuid.UUID) (User, error)
+	Users() ([]User, error)
+	CreateUser(u *User) error
+	UpdateUser(u *User) error
+	DeleteUser(id uuid.UUID) error
+}
+
 type TodoListStore interface {
 	TodoList(id uuid.UUID) (TodoList, error)
 	TodoLists() ([]TodoList, error)
