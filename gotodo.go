@@ -59,3 +59,9 @@ type TodoEntryStore interface {
 	UpdateTodoEntry(t *TodoEntry) error
 	DeleteTodoEntry(id uuid.UUID) error
 }
+
+type Store interface {
+	UserStore
+	TodoListStore
+	TodoEntryStore
+}
