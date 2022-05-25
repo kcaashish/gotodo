@@ -22,7 +22,7 @@ func (s *UserStore) User(id uuid.UUID) (gotodo.User, error) {
 
 func (s *UserStore) Users() ([]gotodo.User, error) {
 	var uu []gotodo.User
-	if err := s.Get(&uu, `SELECT * FROM users`); err != nil {
+	if err := s.Select(&uu, `SELECT * FROM users`); err != nil {
 		return []gotodo.User{}, fmt.Errorf("Error getting Users: %w", err)
 	}
 	return uu, nil

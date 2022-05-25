@@ -22,7 +22,7 @@ func (s *TodoListStore) TodoList(id uuid.UUID) (gotodo.TodoList, error) {
 
 func (s *TodoListStore) TodoLists() ([]gotodo.TodoList, error) {
 	var tl []gotodo.TodoList
-	if err := s.Get(&tl, `SELECT * FROM todo_list`); err != nil {
+	if err := s.Select(&tl, `SELECT * FROM todo_list`); err != nil {
 		return []gotodo.TodoList{}, fmt.Errorf("Error getting TodoList: %w", err)
 	}
 	return tl, nil

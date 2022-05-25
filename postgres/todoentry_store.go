@@ -22,7 +22,7 @@ func (s *TodoEntryStore) TodoEntry(id uuid.UUID) (gotodo.TodoEntry, error) {
 
 func (s *TodoEntryStore) TodoEntriesByList(todolist_id uuid.UUID) ([]gotodo.TodoEntry, error) {
 	var tee []gotodo.TodoEntry
-	if err := s.Get(&tee, `SELECT * FROM todo_entry`); err != nil {
+	if err := s.Select(&tee, `SELECT * FROM todo_entry`); err != nil {
 		return []gotodo.TodoEntry{}, fmt.Errorf("Error getting TodoEntry: %w", err)
 	}
 	return tee, nil
