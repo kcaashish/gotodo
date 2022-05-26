@@ -7,33 +7,33 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `db:"id"`
-	UserName  string    `db:"username"`
-	FirstName string    `db:"first_name"`
-	LastName  string    `db:"last_name"`
-	Email     string    `db:"email"`
-	Password  string    `db:"password"`
+	ID        uuid.UUID `db:"id" json:"id"`
+	UserName  string    `db:"username" json:"username"`
+	FirstName string    `db:"first_name" json:"first_name"`
+	LastName  string    `db:"last_name" json:"last_name"`
+	Email     string    `db:"email" json:"email"`
+	Password  string    `db:"password" json:"password"`
 }
 
 type TodoList struct {
-	ID          uuid.UUID `db:"id"`
-	UserID      uuid.UUID `db:"user_id"`
-	Title       string    `db:"title"`
-	Description string    `db:"description"`
-	CreatedDate time.Time `db:"created_date"`
-	UpdatedDate time.Time `db:"updated_date"`
-	DueDate     time.Time `db:"due_date"`
-	Completed   bool      `db:"completed"`
+	ID          uuid.UUID `db:"id" json:"id"`
+	UserID      uuid.UUID `db:"user_id" json:"user_id"`
+	Title       string    `db:"title" json:"title"`
+	Description string    `db:"description" json:"description"`
+	CreatedDate time.Time `db:"created_date" json:"creaded_date"`
+	UpdatedDate time.Time `db:"updated_date" json:"updated_date"`
+	DueDate     time.Time `db:"due_date" json:"due_date"`
+	Completed   bool      `db:"completed" json:"completed"`
 }
 
 type TodoEntry struct {
-	ID          uuid.UUID `db:"id"`
-	TodoListID  uuid.UUID `db:"todolist_id"`
-	Content     string    `db:"content"`
-	CreatedDate time.Time `db:"created_date"`
-	UpdatedDate time.Time `db:"updated_date"`
-	DueDate     time.Time `db:"due_date"`
-	Completed   bool      `db:"completed"`
+	ID          uuid.UUID `db:"id" json:"id"`
+	TodoListID  uuid.UUID `db:"todolist_id" json:"todolist_id"`
+	Content     string    `db:"content" json:"content"`
+	CreatedDate time.Time `db:"created_date" json:"created_date"`
+	UpdatedDate time.Time `db:"updated_date" json:"updated_date"`
+	DueDate     time.Time `db:"due_date" json:"due_date"`
+	Completed   bool      `db:"completed" json:"completed"`
 }
 
 type UserStore interface {
