@@ -1,7 +1,7 @@
 package web
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
@@ -12,6 +12,7 @@ func (s *Server) getTodoLists() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Fprint(w, tl)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(tl)
 	}
 }
