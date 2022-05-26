@@ -21,8 +21,9 @@ func main() {
 	host := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
-	store, err := postgres.NewStore(fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", user, dbPass, host, dbPort, dbName))
 
+	db := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s", host, dbPort, user, dbPass, dbName)
+	store, err := postgres.NewStore(db)
 	if err != nil {
 		log.Fatal(err)
 	}
