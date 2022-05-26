@@ -19,7 +19,11 @@ type route struct {
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var routes = []route{
+		newRoute("GET", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getTodoList()),
 		newRoute("GET", "/todo", s.getTodoLists()),
+		newRoute("POST", "/todo", s.createTodolist()),
+		newRoute("PATCH", "/todo/update", s.updateTodolist()),
+		newRoute("DELETE", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.deleteTodolist()),
 	}
 
 	var allow []string
