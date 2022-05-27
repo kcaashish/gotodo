@@ -36,12 +36,17 @@ func (s *TodoListStore) CreateTodoList(t *gotodo.TodoList) error {
 	return nil
 }
 
-func (s *TodoListStore) UpdateTodoList(t *gotodo.TodoList) error {
-	if err := s.Get(t,
-		`UPDATE todo_list SET user_id = $2, title = $3, description = $4, 
-		created_date = $5, updated_date = $6, due_date = $7, 
-		completed = $8 WHERE id = $1 RETURNING *`,
-		t.ID, t.UserID, t.Title, t.Description, t.CreatedDate,
+func (s *TodoListStore) UpdateTodoList(id uuid.UUID, t *gotodo.TodoList) error {
+	if err := s.Get(t, `UPDATE todo_list tl SET 
+		user_id = CASE WHEN $2 = '' THEN tl.user_id ELSE $2 END, 
+		title = CASE WHEN $3 = '' THEN tl.title ELSE $3 END, 
+		description = CASE WHEN $4 = '' THEN tl.description ELSE $4 END, 
+		created_date = CASE WHEN $5 = '' THEN tl.created_date ELSE $5 END, 
+		updated_date = CASE WHEN $6 = '' THEN tl.updated_date ELSE $6 END, 
+		due_date = CASE WHEN $7 = '' THEN tl.due_date ELSE $7 END, 
+		completed = CASE WHEN $8 = '' THEN tl.completed ELSE $8 END 
+		WHERE id = $1 RETURNING *`,
+		id, t.UserID, t.Title, t.Description, t.CreatedDate,
 		t.UpdatedDate, t.DueDate, t.Completed); err != nil {
 		return fmt.Errorf("Error updating TodoList: %w", err)
 	}

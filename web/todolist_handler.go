@@ -53,13 +53,14 @@ func (s *Server) createTodoList() http.HandlerFunc {
 
 func (s *Server) updateTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		id, _ := uuid.Parse(getField(r, 0))
 		todolist := &gotodo.TodoList{}
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		if er := s.store.UpdateTodoList(todolist); er != nil {
+		if er := s.store.UpdateTodoList(id, todolist); er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
 			return
 		}

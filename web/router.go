@@ -28,7 +28,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		newRoute("GET", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getTodoList()),
 		newRoute("GET", "/todo", s.getTodoLists()),
 		newRoute("POST", "/todo", s.createTodoList()),
-		newRoute("PATCH", "/todo/update", s.updateTodoList()),
+		newRoute("PATCH", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.updateTodoList()),
 		newRoute("DELETE", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.deleteTodoList()),
 
 		newRoute("GET", "/todo/entry/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getTodoEntry()),
