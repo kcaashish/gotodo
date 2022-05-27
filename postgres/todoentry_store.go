@@ -38,14 +38,14 @@ func (s *TodoEntryStore) CreateTodoEntry(te *gotodo.TodoEntry) error {
 
 func (s *TodoEntryStore) UpdateTodoEntry(id uuid.UUID, te *gotodo.TodoEntry) error {
 	if err := s.Get(te, `UPDATE todo_entry t SET 
-		todolist_id = CASE WHEN $2 = '' THEN t.todolist_id ELSE $2 END, 
+		todolist_id = CASE WHEN NULLIF($2, '') IS NULL THEN t.todolist_id ELSE $2::uuid END, 
 		content = CASE WHEN $3 = '' THEN t.content ELSE $3 END,
-		created_date = CASE WHEN $4 = '' THEN t.created_date ELSE $4 END, 
-		updated_date = CASE WHEN $5 = '' THEN t.updated_date ELSE $5 END, 
-		due_date = CASE WHEN $6 = '' THEN t.due_date ELSE $6 END, 
-		completed = CASE WHEN $7 = '' THEN t.completed ELSE $7 END 
+		created_date = CASE WHEN NULLIF($4, '') IS NULL THEN t.created_date ELSE $4::timestamptz END, 
+		updated_date = CASE WHEN NULLIF($5, '') IS NULL THEN t.updated_date ELSE $5::timestamptz END, 
+		due_date = CASE WHEN NULLIF($6, '') IS NULL THEN t.due_date ELSE $6::timestamptz END, 
+		completed = CASE WHEN NULLIF($7, '') IS NULL THEN t.completed ELSE $7::boolean END 
 		WHERE id = $1 RETURNING *`,
-		te.ID, te.TodoListID, te.Content, te.CreatedDate,
+		id, te.TodoListID, te.Content, te.CreatedDate,
 		te.UpdatedDate, te.DueDate, te.Completed); err != nil {
 		return fmt.Errorf("Error updating TodoEntry: %w", err)
 	}

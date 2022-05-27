@@ -38,13 +38,13 @@ func (s *TodoListStore) CreateTodoList(t *gotodo.TodoList) error {
 
 func (s *TodoListStore) UpdateTodoList(id uuid.UUID, t *gotodo.TodoList) error {
 	if err := s.Get(t, `UPDATE todo_list tl SET 
-		user_id = CASE WHEN $2 = '' THEN tl.user_id ELSE $2 END, 
+		user_id = CASE WHEN NULLIF($2, '') IS NULL THEN tl.user_id ELSE $2::UUID END, 
 		title = CASE WHEN $3 = '' THEN tl.title ELSE $3 END, 
 		description = CASE WHEN $4 = '' THEN tl.description ELSE $4 END, 
-		created_date = CASE WHEN $5 = '' THEN tl.created_date ELSE $5 END, 
-		updated_date = CASE WHEN $6 = '' THEN tl.updated_date ELSE $6 END, 
-		due_date = CASE WHEN $7 = '' THEN tl.due_date ELSE $7 END, 
-		completed = CASE WHEN $8 = '' THEN tl.completed ELSE $8 END 
+		created_date = CASE WHEN NULLIF($5,'') IS NULL THEN tl.created_date ELSE $5::TIMESTAMPTZ END, 
+		updated_date = CASE WHEN NULLIF($6,'') IS NULL THEN tl.updated_date ELSE $6::TIMESTAMPTZ END, 
+		due_date = CASE WHEN NULLIF($7,'') IS NULL THEN tl.due_date ELSE $7::TIMESTAMPTZ END, 
+		completed = CASE WHEN NULLIF($8,'') IS NULL THEN tl.completed ELSE $8::BOOLEAN END 
 		WHERE id = $1 RETURNING *`,
 		id, t.UserID, t.Title, t.Description, t.CreatedDate,
 		t.UpdatedDate, t.DueDate, t.Completed); err != nil {
