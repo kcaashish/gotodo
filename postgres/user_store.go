@@ -46,8 +46,13 @@ func (s *UserStore) UpdateUser(u *gotodo.User) error {
 }
 
 func (s *UserStore) DeleteUser(id uuid.UUID) error {
-	if _, err := s.Exec(`DELETE FROM users WHERE id = $1`, id); err != nil {
+	res, err := s.Exec(`DELETE FROM users WHERE id = $1`, id)
+	if err != nil {
 		return fmt.Errorf("Error deleting user: %w", err)
+	}
+
+	if rows, _ := res.RowsAffected(); rows == 0 {
+		return fmt.Errorf("Error deleting user: No such row")
 	}
 	return nil
 }

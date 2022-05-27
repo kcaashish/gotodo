@@ -19,11 +19,17 @@ type route struct {
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var routes = []route{
+		newRoute("GET", "/users/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getUser()),
+		newRoute("GET", "/users", s.getUsers()),
+		newRoute("POST", "/users", s.createUser()),
+		newRoute("PATCH", "/users/update", s.updateUser()),
+		newRoute("DELETE", "/users/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.deleteUser()),
+
 		newRoute("GET", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getTodoList()),
 		newRoute("GET", "/todo", s.getTodoLists()),
-		newRoute("POST", "/todo", s.createTodolist()),
-		newRoute("PATCH", "/todo/update", s.updateTodolist()),
-		newRoute("DELETE", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.deleteTodolist()),
+		newRoute("POST", "/todo", s.createTodoList()),
+		newRoute("PATCH", "/todo/update", s.updateTodoList()),
+		newRoute("DELETE", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.deleteTodoList()),
 	}
 
 	var allow []string
