@@ -22,7 +22,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		newRoute("GET", "/users/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getUser()),
 		newRoute("GET", "/users", s.getUsers()),
 		newRoute("POST", "/users", s.createUser()),
-		newRoute("PATCH", "/users/update", s.updateUser()),
+		newRoute("PATCH", "/users/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.updateUser()),
 		newRoute("DELETE", "/users/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.deleteUser()),
 
 		newRoute("GET", "/todo/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getTodoList()),

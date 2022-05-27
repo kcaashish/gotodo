@@ -40,7 +40,7 @@ type UserStore interface {
 	User(id uuid.UUID) (User, error)
 	Users() ([]User, error)
 	CreateUser(u *User) error
-	UpdateUser(u *User) error
+	UpdateUser(id uuid.UUID, u *User) error
 	DeleteUser(id uuid.UUID) error
 }
 
@@ -48,7 +48,7 @@ type TodoListStore interface {
 	TodoList(id uuid.UUID) (TodoList, error)
 	TodoLists() ([]TodoList, error)
 	CreateTodoList(t *TodoList) error
-	UpdateTodoList(t *TodoList) error
+	UpdateTodoList(id uuid.UUID, t *TodoList) error
 	DeleteTodoList(id uuid.UUID) error
 }
 
@@ -56,7 +56,7 @@ type TodoEntryStore interface {
 	TodoEntry(id uuid.UUID) (TodoEntry, error)
 	TodoEntriesByList() ([]TodoEntry, error)
 	CreateTodoEntry(t *TodoEntry) error
-	UpdateTodoEntry(t *TodoEntry) error
+	UpdateTodoEntry(id uuid.UUID, t *TodoEntry) error
 	DeleteTodoEntry(id uuid.UUID) error
 }
 

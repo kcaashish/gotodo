@@ -36,10 +36,15 @@ func (s *UserStore) CreateUser(u *gotodo.User) error {
 	return nil
 }
 
-func (s *UserStore) UpdateUser(u *gotodo.User) error {
-	if err := s.Get(u, `UPDATE users SET username = $2, first_name = $3, 
-		last_name = $4, email = $5, password = $6 WHERE id = $1 RETURNING *`,
-		u.ID, u.UserName, u.FirstName, u.LastName, u.Email, u.Password); err != nil {
+func (s *UserStore) UpdateUser(id uuid.UUID, u *gotodo.User) error {
+	if err := s.Get(u, `UPDATE users uu SET
+		username = CASE WHEN $2 = '' THEN uu.username ELSE $2 END,
+		first_name = CASE WHEN $3 = '' THEN uu.first_name ELSE $3 END,
+		last_name = CASE WHEN $4 = '' THEN uu.last_name ELSE $4 END,
+		email = CASE WHEN $5 = '' THEN uu.email ELSE $5 END,
+		password = CASE WHEN $6 = '' THEN uu.password ELSE $6 END
+		WHERE id = $1 RETURNING *`,
+		id, u.UserName, u.FirstName, u.LastName, u.Email, u.Password); err != nil {
 		return fmt.Errorf("Error updating user: %w", err)
 	}
 	return nil

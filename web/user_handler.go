@@ -56,13 +56,14 @@ func (s *Server) createUser() http.HandlerFunc {
 
 func (s *Server) updateUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		id, _ := uuid.Parse(getField(r, 0))
 		u := &gotodo.User{}
 		if err := json.NewDecoder(r.Body).Decode(u); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		if er := s.store.UpdateUser(u); er != nil {
+		if er := s.store.UpdateUser(id, u); er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
 			return
 		}
