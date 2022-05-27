@@ -49,8 +49,13 @@ func (s *TodoListStore) UpdateTodoList(t *gotodo.TodoList) error {
 }
 
 func (s *TodoListStore) DeleteTodoList(id uuid.UUID) error {
-	if _, err := s.Exec(`DELETE FROM todo_list WHERE id = $1`, id); err != nil {
+	res, err := s.Exec(`DELETE FROM todo_list WHERE id = $1`, id)
+	if err != nil {
 		return fmt.Errorf("Error in deleting TodoList: %w", err)
+	}
+
+	if rows, _ := res.RowsAffected(); rows == 0 {
+		return fmt.Errorf("Error deleting user: No such row")
 	}
 	return nil
 }

@@ -10,10 +10,7 @@ import (
 
 func (s *Server) getTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := uuid.Parse(getField(r, 0))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
+		id, _ := uuid.Parse(getField(r, 0))
 
 		t, er := s.store.TodoList(id)
 		if er != nil {
@@ -36,7 +33,7 @@ func (s *Server) getTodoLists() http.HandlerFunc {
 	}
 }
 
-func (s *Server) createTodolist() http.HandlerFunc {
+func (s *Server) createTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todolist := &gotodo.TodoList{}
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
@@ -54,7 +51,7 @@ func (s *Server) createTodolist() http.HandlerFunc {
 	}
 }
 
-func (s *Server) updateTodolist() http.HandlerFunc {
+func (s *Server) updateTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todolist := &gotodo.TodoList{}
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
@@ -72,19 +69,15 @@ func (s *Server) updateTodolist() http.HandlerFunc {
 	}
 }
 
-func (s *Server) deleteTodolist() http.HandlerFunc {
+func (s *Server) deleteTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := uuid.Parse(getField(r, 0))
+		id, _ := uuid.Parse(getField(r, 0))
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
 		if er := s.store.DeleteTodoList(id); er != nil {
-			http.Error(w, er.Error(), http.StatusInternalServerError)
+			http.Error(w, er.Error(), http.StatusBadRequest)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(id)
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
