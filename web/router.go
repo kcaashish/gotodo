@@ -34,7 +34,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		newRoute("GET", "/todo/entry/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getTodoEntry()),
 		newRoute("GET", "/todo/entry", s.getTodoEntries()),
 		newRoute("POST", "/todo/entry", s.createTodoEntry()),
-		newRoute("PATCH", "/todo/entry/update", s.updateTodoEntry()),
+		newRoute("PATCH", "/todo/entry/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.updateTodoEntry()),
 		newRoute("DELETE", "/todo/entry/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.deleteTodoEntry()),
 	}
 

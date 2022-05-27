@@ -56,7 +56,7 @@ type TodoEntryStore interface {
 	TodoEntry(id uuid.UUID) (TodoEntry, error)
 	TodoEntriesByList() ([]TodoEntry, error)
 	CreateTodoEntry(t *TodoEntry) error
-	UpdateTodoEntry(t *TodoEntry) error
+	UpdateTodoEntry(id uuid.UUID, t *TodoEntry) error
 	DeleteTodoEntry(id uuid.UUID) error
 }
 

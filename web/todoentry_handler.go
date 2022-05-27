@@ -56,13 +56,14 @@ func (s *Server) createTodoEntry() http.HandlerFunc {
 
 func (s *Server) updateTodoEntry() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		id, _ := uuid.Parse(getField(r, 0))
 		te := &gotodo.TodoEntry{}
 		if err := json.NewDecoder(r.Body).Decode(te); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		if er := s.store.UpdateTodoEntry(te); er != nil {
+		if er := s.store.UpdateTodoEntry(id, te); er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
 			return
 		}
