@@ -20,7 +20,7 @@ func (s *TodoEntryStore) TodoEntry(id uuid.UUID) (gotodo.TodoEntry, error) {
 	return te, nil
 }
 
-func (s *TodoEntryStore) TodoEntriesByList(todolist_id uuid.UUID) ([]gotodo.TodoEntry, error) {
+func (s *TodoEntryStore) TodoEntriesByList() ([]gotodo.TodoEntry, error) {
 	var tee []gotodo.TodoEntry
 	if err := s.Select(&tee, `SELECT * FROM todo_entry`); err != nil {
 		return []gotodo.TodoEntry{}, fmt.Errorf("Error getting TodoEntry: %w", err)
@@ -49,8 +49,13 @@ func (s *TodoEntryStore) UpdateTodoEntry(te *gotodo.TodoEntry) error {
 }
 
 func (s *TodoEntryStore) DeleteTodoEntry(id uuid.UUID) error {
-	if _, err := s.Exec(`DELETE FROM todo_entry WHERE id = $1`, id); err != nil {
+	res, err := s.Exec(`DELETE FROM todo_entry WHERE id = $1`, id)
+	if err != nil {
 		return fmt.Errorf("Error in deleting TodoEntry: %w", err)
+	}
+
+	if rows, _ := res.RowsAffected(); rows == 0 {
+		return fmt.Errorf("Error deleting user: No such row")
 	}
 	return nil
 }
