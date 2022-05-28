@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/kcaashish/gotodo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *Server) getUser() http.HandlerFunc {
@@ -44,6 +45,9 @@ func (s *Server) createUser() http.HandlerFunc {
 			return
 		}
 
+		hashedPass, _ := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+		u.Password = string(hashedPass)
+
 		if er := s.store.CreateUser(u); er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
 			return
@@ -62,6 +66,9 @@ func (s *Server) updateUser() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+
+		hashedPass, _ := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+		u.Password = string(hashedPass)
 
 		if er := s.store.UpdateUser(id, u); er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
