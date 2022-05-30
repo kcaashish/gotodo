@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/kcaashish/gotodo"
@@ -39,6 +40,8 @@ func (s *Server) getTodoEntries() http.HandlerFunc {
 func (s *Server) createTodoEntry() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		te := &gotodo.TodoEntry{}
+		te.CreatedDate = time.Now().Local()
+		te.UpdatedDate = time.Now().Local()
 		if err := json.NewDecoder(r.Body).Decode(te); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -58,6 +61,7 @@ func (s *Server) updateTodoEntry() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, _ := uuid.Parse(getField(r, 0))
 		te := &gotodo.TodoEntry{}
+		te.UpdatedDate = time.Now().Local()
 		if err := json.NewDecoder(r.Body).Decode(te); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

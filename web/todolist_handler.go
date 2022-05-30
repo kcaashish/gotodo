@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/kcaashish/gotodo"
@@ -36,6 +37,8 @@ func (s *Server) getTodoLists() http.HandlerFunc {
 func (s *Server) createTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todolist := &gotodo.TodoList{}
+		todolist.CreatedDate = time.Now().Local()
+		todolist.UpdatedDate = time.Now().Local()
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -55,6 +58,7 @@ func (s *Server) updateTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, _ := uuid.Parse(getField(r, 0))
 		todolist := &gotodo.TodoList{}
+		todolist.UpdatedDate = time.Now().Local()
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

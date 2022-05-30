@@ -38,11 +38,11 @@ func (s *TodoEntryStore) CreateTodoEntry(te *gotodo.TodoEntry) error {
 
 func (s *TodoEntryStore) UpdateTodoEntry(id uuid.UUID, te *gotodo.TodoEntry) error {
 	if err := s.Get(te, `UPDATE todo_entry t SET 
-		todolist_id = CASE WHEN NULLIF($2, '') IS NULL THEN t.todolist_id ELSE $2::uuid END, 
+		todolist_id = CASE WHEN NULLIF($2, '00000000-0000-0000-0000-000000000000'::UUID) IS NULL THEN t.todolist_id ELSE $2::uuid END, 
 		content = CASE WHEN $3 = '' THEN t.content ELSE $3 END,
-		created_date = CASE WHEN NULLIF($4, '') IS NULL THEN t.created_date ELSE $4::timestamptz END, 
-		updated_date = CASE WHEN NULLIF($5, '') IS NULL THEN t.updated_date ELSE $5::timestamptz END, 
-		due_date = CASE WHEN NULLIF($6, '') IS NULL THEN t.due_date ELSE $6::timestamptz END, 
+		created_date = CASE WHEN NULLIF($4, '0001-01-01T00:00:00Z'::TIMESTAMP) IS NULL THEN t.created_date ELSE $4::timestamp END, 
+		updated_date = CASE WHEN NULLIF($5, '0001-01-01T00:00:00Z'::TIMESTAMP) IS NULL THEN t.updated_date ELSE $5::timestamp END, 
+		due_date = CASE WHEN NULLIF($6, '0001-01-01T00:00:00Z'::TIMESTAMP) IS NULL THEN t.due_date ELSE $6::timestamp END, 
 		completed = CASE WHEN NULLIF($7, '') IS NULL THEN t.completed ELSE $7::boolean END 
 		WHERE id = $1 RETURNING *`,
 		id, te.TodoListID, te.Content, te.CreatedDate,
