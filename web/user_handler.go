@@ -2,8 +2,12 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/kcaashish/gotodo"
 	"golang.org/x/crypto/bcrypt"
@@ -90,5 +94,51 @@ func (s *Server) deleteUser() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+func (s *Server) userLogin() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		usr := &gotodo.User{}
+		if er := json.NewDecoder(r.Body).Decode(usr); er != nil {
+			http.Error(w, er.Error(), http.StatusBadRequest)
+			return
+		}
+
+		u, err := s.store.FindUser(usr.Email)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		expiresAt := time.Now().Add(time.Minute * 100000).Unix()
+
+		errpw := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(usr.Password))
+		if errpw != nil && errpw == bcrypt.ErrMismatchedHashAndPassword {
+			http.Error(w, errpw.Error(), http.StatusBadRequest)
+			return
+		}
+
+		tk := &gotodo.Token{
+			UserID:   u.ID,
+			UserName: u.UserName,
+			Email:    u.Email,
+			StandardClaims: &jwt.StandardClaims{
+				ExpiresAt: expiresAt,
+			},
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, tk)
+
+		tokenString, errtk := token.SignedString([]byte(os.Getenv("TOKEN_PASSWORD")))
+		if errtk != nil {
+			fmt.Println(errtk)
+		}
+
+		// var resp = map[string]interface{}{"status": false, "message": "Logged in"}
+		// resp["token"] = tokenString
+		// resp["user"] = u
+		var resp = map[string]string{"token": string(tokenString)}
+		json.NewEncoder(w).Encode(resp)
 	}
 }

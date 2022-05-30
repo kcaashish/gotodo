@@ -61,3 +61,12 @@ func (s *UserStore) DeleteUser(id uuid.UUID) error {
 	}
 	return nil
 }
+
+func (s *UserStore) FindUser(email string) (gotodo.User, error) {
+	var u gotodo.User
+	er := s.Get(&u, `SELECT * FROM users WHERE email = $1`, email)
+	if er != nil {
+		return gotodo.User{}, fmt.Errorf("Invalid user! %w", er)
+	}
+	return u, nil
+}

@@ -3,6 +3,7 @@ package gotodo
 import (
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 )
 
@@ -36,12 +37,20 @@ type TodoEntry struct {
 	Completed   bool      `db:"completed" json:"completed"`
 }
 
+type Token struct {
+	UserID   uuid.UUID `json:"user_id"`
+	UserName string    `json:"user_name"`
+	Email    string    `json:"email"`
+	*jwt.StandardClaims
+}
+
 type UserStore interface {
 	User(id uuid.UUID) (User, error)
 	Users() ([]User, error)
 	CreateUser(u *User) error
 	UpdateUser(id uuid.UUID, u *User) error
 	DeleteUser(id uuid.UUID) error
+	FindUser(email string) (User, error)
 }
 
 type TodoListStore interface {
