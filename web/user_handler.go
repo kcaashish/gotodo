@@ -111,7 +111,7 @@ func (s *Server) userLogin() http.HandlerFunc {
 			return
 		}
 
-		expiresAt := time.Now().Add(time.Minute * 100000).Unix()
+		expiresAt := time.Now().Add(time.Minute * 5)
 
 		errpw := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(usr.Password))
 		if errpw != nil && errpw == bcrypt.ErrMismatchedHashAndPassword {
@@ -124,7 +124,7 @@ func (s *Server) userLogin() http.HandlerFunc {
 			UserName: u.UserName,
 			Email:    u.Email,
 			StandardClaims: &jwt.StandardClaims{
-				ExpiresAt: expiresAt,
+				ExpiresAt: expiresAt.Unix(),
 			},
 		}
 
@@ -135,10 +135,7 @@ func (s *Server) userLogin() http.HandlerFunc {
 			fmt.Println(errtk)
 		}
 
-		// var resp = map[string]interface{}{"status": false, "message": "Logged in"}
-		// resp["token"] = tokenString
-		// resp["user"] = u
-		var resp = map[string]string{"token": string(tokenString)}
+		var resp = map[string]string{"access_token": string(tokenString)}
 		json.NewEncoder(w).Encode(resp)
 	}
 }

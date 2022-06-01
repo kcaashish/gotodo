@@ -20,10 +20,10 @@ type route struct {
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var routes = []route{
 		newRoute("POST", "/users/login", s.userLogin()),
+		newRoute("POST", "/users/create", s.createUser()),
 
 		newRoute("GET", "/users/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.getUser()),
 		newRoute("GET", "/users", s.getUsers()),
-		newRoute("POST", "/users", s.createUser()),
 		newRoute("PATCH", "/users/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.updateUser()),
 		newRoute("DELETE", "/users/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", s.deleteUser()),
 

@@ -30,5 +30,5 @@ func main() {
 
 	router := web.NewServer(store)
 	fmt.Printf("Starting the server on: %v...\n", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), web.Authenticate(router)))
 }
