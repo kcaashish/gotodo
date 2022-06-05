@@ -2,12 +2,9 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
-	"os"
 	"time"
 
-	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/kcaashish/gotodo"
 	"golang.org/x/crypto/bcrypt"
@@ -111,31 +108,30 @@ func (s *Server) userLogin() http.HandlerFunc {
 			return
 		}
 
-		expiresAt := time.Now().Add(time.Minute * 5)
-
 		errpw := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(usr.Password))
 		if errpw != nil && errpw == bcrypt.ErrMismatchedHashAndPassword {
 			http.Error(w, errpw.Error(), http.StatusBadRequest)
 			return
 		}
 
-		tk := &gotodo.Token{
-			UserID:   u.ID,
-			UserName: u.UserName,
-			Email:    u.Email,
-			StandardClaims: &jwt.StandardClaims{
-				ExpiresAt: expiresAt.Unix(),
-			},
+		// generate access token
+		var accessTokenDuration = time.Duration(1) * time.Minute
+		accessToken, err := generateToken(u, accessTokenDuration)
+		if err != nil {
+			return
 		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, tk)
-
-		tokenString, errtk := token.SignedString([]byte(os.Getenv("TOKEN_PASSWORD")))
-		if errtk != nil {
-			fmt.Println(errtk)
+		// generate refresh token
+		var refreshTokenDuration = time.Duration(7) * 24 * time.Hour
+		refreshToken, err := generateToken(u, refreshTokenDuration)
+		if err != nil {
+			return
 		}
 
-		var resp = map[string]string{"access_token": string(tokenString)}
+		var resp = map[string]string{
+			"access_token":  string(accessToken),
+			"refresh_token": string(refreshToken),
+		}
 		json.NewEncoder(w).Encode(resp)
 	}
 }

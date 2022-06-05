@@ -93,7 +93,7 @@ func Refresh() http.Handler {
 	})
 }
 
-func generateToken(u *gotodo.User, period time.Duration) (string, error) {
+func generateToken(u gotodo.User, period time.Duration) (string, error) {
 	now := time.Now()
 	claims := &gotodo.Token{
 		UserID:   u.ID,
