@@ -92,3 +92,24 @@ func Refresh() http.Handler {
 		json.NewEncoder(w).Encode(resp)
 	})
 }
+
+func generateToken(u *gotodo.User, period time.Duration) (string, error) {
+	now := time.Now()
+	claims := &gotodo.Token{
+		UserID:   u.ID,
+		UserName: u.UserName,
+		Email:    u.Email,
+		StandardClaims: &jwt.StandardClaims{
+			ExpiresAt: now.Add(period).Unix(),
+		},
+	}
+
+	tokenWithClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	token, errtk := tokenWithClaims.SignedString([]byte(os.Getenv("TOKEN_PASSWORD")))
+	if errtk != nil {
+		fmt.Println(errtk)
+		return "", errtk
+	}
+	return token, nil
+}
