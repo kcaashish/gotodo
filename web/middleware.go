@@ -27,11 +27,17 @@ func Authenticate(next http.Handler) http.Handler {
 			}
 		}
 
+		// extract token
 		tokenString := r.Header.Get("Authorization")
 
+		// set up a claim
 		tk := &gotodo.Token{}
 
+		// verify token
 		token, er := jwt.ParseWithClaims(tokenString, tk, func(t *jwt.Token) (interface{}, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
+			}
 			return []byte(os.Getenv("TOKEN_PASSWORD")), nil
 		})
 
