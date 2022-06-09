@@ -22,7 +22,3 @@ go.work
 
 # ENV
 .env
-
-# Makefile
-target
-Makefile
