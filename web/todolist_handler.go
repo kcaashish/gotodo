@@ -38,6 +38,10 @@ func (s *Server) createTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		todolist := &gotodo.TodoList{}
 		todolist.ID = uuid.New()
+
+		userid := r.Context().Value("user").(uuid.UUID)
+		todolist.UserID = userid
+
 		todolist.CreatedDate = time.Now().Local()
 		todolist.UpdatedDate = time.Now().Local()
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
