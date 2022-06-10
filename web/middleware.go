@@ -57,13 +57,15 @@ func Authenticate(next http.Handler) http.Handler {
 	})
 }
 
-func Refresh() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString := r.Header.Get("Authorization")
-
+func (s *Server) Refresh() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		refTokenStr := r.Header.Get("Authorization")
 		claims := &gotodo.Claims{}
 
-		token, er := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		token, er := jwt.ParseWithClaims(refTokenStr, claims, func(t *jwt.Token) (interface{}, error) {
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
+			}
 			return []byte(os.Getenv("TOKEN_PASSWORD")), nil
 		})
 
@@ -77,13 +79,9 @@ func Refresh() http.Handler {
 			return
 		}
 
-		if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 30*time.Second {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		expiresAt := time.Now().Add(time.Duration(1) * time.Minute)
 
-		expiresAt := time.Now().Add(time.Minute * 5)
-
+		claims.IssuedAt = time.Now().Unix()
 		claims.ExpiresAt = expiresAt.Unix()
 
 		tokenRef := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -94,9 +92,14 @@ func Refresh() http.Handler {
 			fmt.Println(errtk)
 		}
 
-		var resp = map[string]string{"refresh_token": string(tokenString)}
+		var resp = map[string]string{
+			"new_access_token": string(tokenString),
+			"expires_at":       expiresAt.Local().String(),
+		}
+
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(resp)
-	})
+	}
 }
 
 func generateToken(u gotodo.User, period time.Duration) (string, int64, error) {
