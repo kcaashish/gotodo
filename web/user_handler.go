@@ -117,7 +117,7 @@ func (s *Server) userLogin() http.HandlerFunc {
 
 		errpw := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(usr.Password))
 		if errpw != nil && errpw == bcrypt.ErrMismatchedHashAndPassword {
-			http.Error(w, errpw.Error(), http.StatusBadRequest)
+			http.Error(w, errpw.Error(), http.StatusUnauthorized)
 			return
 		}
 
