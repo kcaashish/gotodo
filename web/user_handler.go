@@ -135,7 +135,12 @@ func (s *Server) userLogin() http.HandlerFunc {
 			RefreshTokenExpiresAt: time.Unix(refreshTokenExpiresAt, 0),
 		}
 
+		resp := map[string]interface{}{
+			"token": tokens,
+			"user":  usr,
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(tokens)
+		json.NewEncoder(w).Encode(resp)
 	}
 }
