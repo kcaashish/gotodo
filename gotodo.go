@@ -37,11 +37,18 @@ type TodoEntry struct {
 	Completed   bool      `db:"completed" json:"completed"`
 }
 
-type Token struct {
+type Claims struct {
 	UserID   uuid.UUID `json:"user_id"`
 	UserName string    `json:"user_name"`
 	Email    string    `json:"email"`
 	*jwt.StandardClaims
+}
+
+type Token struct {
+	AccessToken           string    `json:"access_token"`
+	AccessTokenExpiresAt  time.Time `json:"access_token_expires_at"`
+	RefreshToken          string    `json:"refresh_token"`
+	RefreshTokenExpiresAt time.Time `json:"refresh_token_expires_at"`
 }
 
 type UserStore interface {

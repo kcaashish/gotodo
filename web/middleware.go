@@ -31,10 +31,10 @@ func Authenticate(next http.Handler) http.Handler {
 		tokenString := r.Header.Get("Authorization")
 
 		// set up a claim
-		tk := &gotodo.Token{}
+		claims := &gotodo.Claims{}
 
 		// verify token
-		token, er := jwt.ParseWithClaims(tokenString, tk, func(t *jwt.Token) (interface{}, error) {
+		token, er := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
 			}
@@ -51,7 +51,7 @@ func Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), "user", tk.UserID)
+		ctx := context.WithValue(r.Context(), "user", claims.UserID)
 		r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
@@ -61,9 +61,9 @@ func Refresh() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := r.Header.Get("Authorization")
 
-		tk := &gotodo.Token{}
+		claims := &gotodo.Claims{}
 
-		token, er := jwt.ParseWithClaims(tokenString, tk, func(t *jwt.Token) (interface{}, error) {
+		token, er := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("TOKEN_PASSWORD")), nil
 		})
 
@@ -77,16 +77,16 @@ func Refresh() http.Handler {
 			return
 		}
 
-		if time.Unix(tk.ExpiresAt, 0).Sub(time.Now()) > 30*time.Second {
+		if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 30*time.Second {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
 		expiresAt := time.Now().Add(time.Minute * 5)
 
-		tk.ExpiresAt = expiresAt.Unix()
+		claims.ExpiresAt = expiresAt.Unix()
 
-		tokenRef := jwt.NewWithClaims(jwt.SigningMethodHS256, tk)
+		tokenRef := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 		tokenString, errtk := tokenRef.SignedString([]byte(os.Getenv("TOKEN_PASSWORD")))
 		if errtk != nil {
@@ -101,7 +101,7 @@ func Refresh() http.Handler {
 
 func generateToken(u gotodo.User, period time.Duration) (string, int64, error) {
 	now := time.Now()
-	claims := &gotodo.Token{
+	claims := &gotodo.Claims{
 		UserID:   u.ID,
 		UserName: u.UserName,
 		Email:    u.Email,

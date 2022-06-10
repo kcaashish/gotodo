@@ -128,12 +128,14 @@ func (s *Server) userLogin() http.HandlerFunc {
 			return
 		}
 
-		var resp = map[string]string{
-			"access_token":             string(accessToken),
-			"access_token_expires_at":  time.Unix(accessTokenExpiresAt, 0).String(),
-			"refresh_token":            string(refreshToken),
-			"refresh_token_expires_at": time.Unix(refreshTokenExpiresAt, 0).String(),
+		tokens := gotodo.Token{
+			AccessToken:           accessToken,
+			AccessTokenExpiresAt:  time.Unix(accessTokenExpiresAt, 0),
+			RefreshToken:          refreshToken,
+			RefreshTokenExpiresAt: time.Unix(refreshTokenExpiresAt, 0),
 		}
-		json.NewEncoder(w).Encode(resp)
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(tokens)
 	}
 }
