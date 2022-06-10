@@ -116,21 +116,23 @@ func (s *Server) userLogin() http.HandlerFunc {
 
 		// generate access token
 		var accessTokenDuration = time.Duration(1) * time.Minute
-		accessToken, err := generateToken(u, accessTokenDuration)
+		accessToken, accessTokenExpiresAt, err := generateToken(u, accessTokenDuration)
 		if err != nil {
 			return
 		}
 
 		// generate refresh token
 		var refreshTokenDuration = time.Duration(7) * 24 * time.Hour
-		refreshToken, err := generateToken(u, refreshTokenDuration)
+		refreshToken, refreshTokenExpiresAt, err := generateToken(u, refreshTokenDuration)
 		if err != nil {
 			return
 		}
 
 		var resp = map[string]string{
-			"access_token":  string(accessToken),
-			"refresh_token": string(refreshToken),
+			"access_token":             string(accessToken),
+			"access_token_expires_at":  time.Unix(accessTokenExpiresAt, 0).String(),
+			"refresh_token":            string(refreshToken),
+			"refresh_token_expires_at": time.Unix(refreshTokenExpiresAt, 0).String(),
 		}
 		json.NewEncoder(w).Encode(resp)
 	}

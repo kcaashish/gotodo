@@ -99,13 +99,14 @@ func Refresh() http.Handler {
 	})
 }
 
-func generateToken(u gotodo.User, period time.Duration) (string, error) {
+func generateToken(u gotodo.User, period time.Duration) (string, int64, error) {
 	now := time.Now()
 	claims := &gotodo.Token{
 		UserID:   u.ID,
 		UserName: u.UserName,
 		Email:    u.Email,
 		StandardClaims: &jwt.StandardClaims{
+			IssuedAt:  now.Unix(),
 			ExpiresAt: now.Add(period).Unix(),
 		},
 	}
@@ -115,7 +116,7 @@ func generateToken(u gotodo.User, period time.Duration) (string, error) {
 	token, errtk := tokenWithClaims.SignedString([]byte(os.Getenv("TOKEN_PASSWORD")))
 	if errtk != nil {
 		fmt.Println(errtk)
-		return "", errtk
+		return "", 0, errtk
 	}
-	return token, nil
+	return token, claims.ExpiresAt, nil
 }
