@@ -40,6 +40,7 @@ func (s *Server) getTodoEntries() http.HandlerFunc {
 func (s *Server) createTodoEntry() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		te := &gotodo.TodoEntry{}
+		te.ID = uuid.New()
 		te.CreatedDate = time.Now().Local()
 		te.UpdatedDate = time.Now().Local()
 		if err := json.NewDecoder(r.Body).Decode(te); err != nil {

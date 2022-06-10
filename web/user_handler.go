@@ -45,6 +45,7 @@ func (s *Server) createUser() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		u.ID = uuid.New()
 
 		hashedPass, _ := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 		u.Password = string(hashedPass)
