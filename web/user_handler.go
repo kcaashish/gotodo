@@ -14,6 +14,12 @@ func (s *Server) getUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, _ := uuid.Parse(getField(r, 0))
 
+		userid := r.Context().Value("user").(uuid.UUID)
+		if userid != id {
+			http.Error(w, "Invalid request", http.StatusForbidden)
+			return
+		}
+
 		u, err := s.store.User(id)
 		// er if the given id is not in the database
 		if err != nil {
