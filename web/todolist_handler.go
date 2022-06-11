@@ -32,13 +32,22 @@ func (s *Server) getTodoList() http.HandlerFunc {
 
 func (s *Server) getTodoLists() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tl, err := s.store.TodoLists()
+		todolists, err := s.store.TodoLists()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		// return back the tls of particular user only
+		userid := r.Context().Value("user").(uuid.UUID)
+		tlToReturn := make([]gotodo.TodoList, 0)
+		for _, tl := range todolists {
+			if userid == tl.UserID {
+				tlToReturn = append(tlToReturn, tl)
+			}
+		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(tl)
+		json.NewEncoder(w).Encode(tlToReturn)
 	}
 }
 
