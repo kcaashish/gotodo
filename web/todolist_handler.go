@@ -80,6 +80,22 @@ func (s *Server) createTodoList() http.HandlerFunc {
 func (s *Server) updateTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, _ := uuid.Parse(getField(r, 0))
+
+		// first fetch the tl based on id
+		t, er := s.store.TodoList(id)
+		if er != nil {
+			http.Error(w, er.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// fetch from db first then check for UserID
+		userid := r.Context().Value("user").(uuid.UUID)
+		if userid != t.UserID {
+			http.Error(w, "Invalid request", http.StatusForbidden)
+			return
+		}
+
+		// if valid userid, proceed with update
 		todolist := &gotodo.TodoList{}
 		todolist.UpdatedDate = time.Now().Local()
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
