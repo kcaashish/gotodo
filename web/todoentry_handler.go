@@ -17,6 +17,7 @@ func (s *Server) getTodoEntry() http.HandlerFunc {
 		// er if the given id is not in the database
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
