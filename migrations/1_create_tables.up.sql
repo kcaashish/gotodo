@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS todo_list (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     due_at TIMESTAMPTZ NOT NULL,
-    completed BOOLEAN,
+    completed BOOLEAN NOT NUll DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -28,6 +28,6 @@ CREATE TABLE IF NOT EXISTS todo_entry (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     due_at TIMESTAMPTZ NOT NULL,
-    completed BOOLEAN,
+    completed BOOLEAN NOT NUll DEFAULT FALSE,
     FOREIGN KEY (todolist_id) REFERENCES todo_list (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
