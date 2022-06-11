@@ -29,8 +29,8 @@ func (s *TodoListStore) TodoLists() ([]gotodo.TodoList, error) {
 }
 
 func (s *TodoListStore) CreateTodoList(t *gotodo.TodoList) error {
-	if err := s.Get(t, `INSERT INTO todo_list VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-		t.ID, t.UserID, t.Title, t.Description, t.CreatedDate, t.UpdatedDate, t.DueDate, t.Completed); err != nil {
+	if err := s.Get(t, `INSERT INTO todo_list(id, user_id, title, description, due_at, completed) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+		t.ID, t.UserID, t.Title, t.Description, t.DueAt, t.Completed); err != nil {
 		return fmt.Errorf("Error creating TodoList: %w", err)
 	}
 	return nil
@@ -46,8 +46,8 @@ func (s *TodoListStore) UpdateTodoList(id uuid.UUID, t *gotodo.TodoList) error {
 		due_date = CASE WHEN NULLIF($7,'0001-01-01T00:00:00Z'::TIMESTAMP) IS NULL THEN tl.due_date ELSE $7::TIMESTAMP END, 
 		completed = CASE WHEN NULLIF($8,'') IS NULL THEN tl.completed ELSE $8::BOOLEAN END 
 		WHERE id = $1 RETURNING *`,
-		id, t.UserID, t.Title, t.Description, t.CreatedDate,
-		t.UpdatedDate, t.DueDate, t.Completed); err != nil {
+		id, t.UserID, t.Title, t.Description, t.CreatedAt,
+		t.UpdatedAt, t.DueAt, t.Completed); err != nil {
 		return fmt.Errorf("Error updating TodoList: %w", err)
 	}
 	return nil
