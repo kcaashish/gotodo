@@ -4,7 +4,9 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(300) NOT NULL,
-    password CHAR(60) NOT NULL
+    password CHAR(60) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), 
+    password_changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS todo_list (
@@ -12,9 +14,9 @@ CREATE TABLE IF NOT EXISTS todo_list (
     user_id UUID NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP,
-    due_date TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    due_at TIMESTAMPTZ NOT NULL,
     completed BOOLEAN,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -23,9 +25,9 @@ CREATE TABLE IF NOT EXISTS todo_entry (
     id UUID PRIMARY KEY,
     todolist_id UUID NOT NULL,
     content TEXT NOT NULL,
-    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP,
-    due_date TIMESTAMP NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ,
+    due_at TIMESTAMPTZ NOT NULL,
     completed BOOLEAN,
     FOREIGN KEY (todolist_id) REFERENCES todo_list (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
