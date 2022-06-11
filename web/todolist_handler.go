@@ -100,11 +100,25 @@ func (s *Server) deleteTodoList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, _ := uuid.Parse(getField(r, 0))
 
+		// first fetch the tl based on id
+		t, er := s.store.TodoList(id)
+		if er != nil {
+			http.Error(w, er.Error(), http.StatusInternalServerError)
+		}
+
+		// fetch from db first then check for UserID
+		userid := r.Context().Value("user").(uuid.UUID)
+		if userid != t.UserID {
+			http.Error(w, "Invalid request", http.StatusForbidden)
+			return
+		}
+
 		if er := s.store.DeleteTodoList(id); er != nil {
 			http.Error(w, er.Error(), http.StatusBadRequest)
 			return
 		}
 
-		w.WriteHeader(http.StatusNoContent)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(t)
 	}
 }
