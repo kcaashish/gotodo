@@ -1,6 +1,7 @@
 package gotodo
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -38,24 +39,24 @@ type LoginUserResponse struct {
 }
 
 type TodoList struct {
-	ID          uuid.UUID `db:"id" json:"id"`
-	UserID      uuid.UUID `db:"user_id" json:"user_id"`
-	Title       string    `db:"title" json:"title"`
-	Description string    `db:"description" json:"description"`
-	CreatedDate time.Time `db:"created_at" json:"creaded_at"`
-	UpdatedDate time.Time `db:"updated_at" json:"updated_at"`
-	DueDate     time.Time `db:"due_at" json:"due_at"`
-	Completed   bool      `db:"completed" json:"completed"`
+	ID          uuid.UUID    `db:"id" json:"id"`
+	UserID      uuid.UUID    `db:"user_id" json:"user_id"`
+	Title       string       `db:"title" json:"title"`
+	Description string       `db:"description" json:"description"`
+	CreatedAt   time.Time    `db:"created_at" json:"creaded_at"`
+	UpdatedAt   sql.NullTime `db:"updated_at" json:"updated_at"`
+	DueAt       time.Time    `db:"due_at" json:"due_at"`
+	Completed   bool         `db:"completed" json:"completed"`
 }
 
 type TodoEntry struct {
-	ID          uuid.UUID `db:"id" json:"id"`
-	TodoListID  uuid.UUID `db:"todolist_id" json:"todolist_id"`
-	Content     string    `db:"content" json:"content"`
-	CreatedDate time.Time `db:"created_at" json:"created_at"`
-	UpdatedDate time.Time `db:"updated_at" json:"updated_at"`
-	DueDate     time.Time `db:"due_at" json:"due_at"`
-	Completed   bool      `db:"completed" json:"completed"`
+	ID         uuid.UUID    `db:"id" json:"id"`
+	TodoListID uuid.UUID    `db:"todolist_id" json:"todolist_id"`
+	Content    string       `db:"content" json:"content"`
+	CreatedAt  time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt  sql.NullTime `db:"updated_at" json:"updated_at"`
+	DueAt      time.Time    `db:"due_at" json:"due_at"`
+	Completed  bool         `db:"completed" json:"completed"`
 }
 
 type Claims struct {
