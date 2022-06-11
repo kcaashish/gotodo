@@ -16,6 +16,7 @@ func (s *Server) getTodoList() http.HandlerFunc {
 		t, er := s.store.TodoList(id)
 		if er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		// fetch from db first then check for UserID
@@ -104,6 +105,7 @@ func (s *Server) deleteTodoList() http.HandlerFunc {
 		t, er := s.store.TodoList(id)
 		if er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		// fetch from db first then check for UserID
