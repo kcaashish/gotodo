@@ -38,16 +38,13 @@ func (s *TodoListStore) CreateTodoList(t *gotodo.TodoList) error {
 
 func (s *TodoListStore) UpdateTodoList(id uuid.UUID, t *gotodo.TodoList) error {
 	if err := s.Get(t, `UPDATE todo_list tl SET 
-		user_id = CASE WHEN NULLIF($2, '00000000-0000-0000-0000-000000000000'::UUID) IS NULL THEN tl.user_id ELSE $2::UUID END, 
-		title = CASE WHEN $3 = '' THEN tl.title ELSE $3 END, 
-		description = CASE WHEN $4 = '' THEN tl.description ELSE $4 END, 
-		created_date = CASE WHEN NULLIF($5, '0001-01-01T00:00:00Z'::TIMESTAMP) IS NULL THEN tl.created_date ELSE $5::TIMESTAMP END, 
-		updated_date = CASE WHEN NULLIF($6,'0001-01-01T00:00:00Z'::TIMESTAMP) IS NULL THEN tl.updated_date ELSE $6::TIMESTAMP END, 
-		due_date = CASE WHEN NULLIF($7,'0001-01-01T00:00:00Z'::TIMESTAMP) IS NULL THEN tl.due_date ELSE $7::TIMESTAMP END, 
-		completed = CASE WHEN NULLIF($8,'') IS NULL THEN tl.completed ELSE $8::BOOLEAN END 
+		title = CASE WHEN $2 = '' THEN tl.title ELSE $2 END, 
+		description = CASE WHEN $3 = '' THEN tl.description ELSE $3 END, 
+		updated_at = $4::TIMESTAMP, 
+		due_at = CASE WHEN NULLIF($5,'0001-01-01T00:00:00Z'::TIMESTAMP) IS NULL THEN tl.due_at ELSE $5::TIMESTAMP END, 
+		completed = CASE WHEN NULLIF($6,'') IS NULL THEN tl.completed ELSE $6::BOOLEAN END 
 		WHERE id = $1 RETURNING *`,
-		id, t.UserID, t.Title, t.Description, t.CreatedAt,
-		t.UpdatedAt, t.DueAt, t.Completed); err != nil {
+		id, t.Title, t.Description, t.UpdatedAt.Time, t.DueAt, t.Completed); err != nil {
 		return fmt.Errorf("Error updating TodoList: %w", err)
 	}
 	return nil
