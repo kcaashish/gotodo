@@ -17,6 +17,14 @@ func (s *Server) getTodoList() http.HandlerFunc {
 		if er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
 		}
+
+		// fetch from db first then check for UserID
+		userid := r.Context().Value("user").(uuid.UUID)
+		if userid != t.UserID {
+			http.Error(w, "Invalid request", http.StatusForbidden)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(t)
 	}
