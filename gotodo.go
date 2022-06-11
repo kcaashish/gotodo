@@ -8,12 +8,33 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `db:"id" json:"id"`
-	UserName  string    `db:"username" json:"username"`
-	FirstName string    `db:"first_name" json:"first_name"`
-	LastName  string    `db:"last_name" json:"last_name"`
-	Email     string    `db:"email" json:"email"`
-	Password  string    `db:"password" json:"password"`
+	ID                uuid.UUID `db:"id" json:"id"`
+	UserName          string    `db:"username" json:"username"`
+	FirstName         string    `db:"first_name" json:"first_name"`
+	LastName          string    `db:"last_name" json:"last_name"`
+	Email             string    `db:"email" json:"email"`
+	Password          string    `db:"password" json:"password"`
+	CreatedAt         time.Time `db:"created_at" json:"created_at"`
+	PasswordChangedAt time.Time `db:"password_changed_at" json:"password_changed_at"`
+}
+
+type UserResponse struct {
+	ID                uuid.UUID `json:"id"`
+	UserName          string    `json:"username"`
+	FirstName         string    `json:"first_name"`
+	LastName          string    `json:"last_name"`
+	Email             string    `json:"email"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+}
+
+type LoginUserRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginUserResponse struct {
+	Token Token        `json:"token"`
+	User  UserResponse `json:"user"`
 }
 
 type TodoList struct {
@@ -21,9 +42,9 @@ type TodoList struct {
 	UserID      uuid.UUID `db:"user_id" json:"user_id"`
 	Title       string    `db:"title" json:"title"`
 	Description string    `db:"description" json:"description"`
-	CreatedDate time.Time `db:"created_date" json:"creaded_date"`
-	UpdatedDate time.Time `db:"updated_date" json:"updated_date"`
-	DueDate     time.Time `db:"due_date" json:"due_date"`
+	CreatedDate time.Time `db:"created_at" json:"creaded_at"`
+	UpdatedDate time.Time `db:"updated_at" json:"updated_at"`
+	DueDate     time.Time `db:"due_at" json:"due_at"`
 	Completed   bool      `db:"completed" json:"completed"`
 }
 
@@ -31,9 +52,9 @@ type TodoEntry struct {
 	ID          uuid.UUID `db:"id" json:"id"`
 	TodoListID  uuid.UUID `db:"todolist_id" json:"todolist_id"`
 	Content     string    `db:"content" json:"content"`
-	CreatedDate time.Time `db:"created_date" json:"created_date"`
-	UpdatedDate time.Time `db:"updated_date" json:"updated_date"`
-	DueDate     time.Time `db:"due_date" json:"due_date"`
+	CreatedDate time.Time `db:"created_at" json:"created_at"`
+	UpdatedDate time.Time `db:"updated_at" json:"updated_at"`
+	DueDate     time.Time `db:"due_at" json:"due_at"`
 	Completed   bool      `db:"completed" json:"completed"`
 }
 

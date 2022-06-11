@@ -118,7 +118,7 @@ func (s *Server) deleteUser() http.HandlerFunc {
 
 func (s *Server) userLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		usr := &gotodo.User{}
+		usr := &gotodo.LoginUserRequest{}
 		if er := json.NewDecoder(r.Body).Decode(usr); er != nil {
 			http.Error(w, er.Error(), http.StatusBadRequest)
 			return
@@ -157,9 +157,18 @@ func (s *Server) userLogin() http.HandlerFunc {
 			RefreshTokenExpiresAt: time.Unix(refreshTokenExpiresAt, 0),
 		}
 
-		resp := map[string]interface{}{
-			"token": tokens,
-			"user":  usr,
+		user := gotodo.UserResponse{
+			ID:                u.ID,
+			UserName:          u.UserName,
+			FirstName:         u.FirstName,
+			LastName:          u.LastName,
+			Email:             u.Email,
+			PasswordChangedAt: u.PasswordChangedAt,
+		}
+
+		resp := &gotodo.LoginUserResponse{
+			Token: tokens,
+			User:  user,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
