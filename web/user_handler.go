@@ -69,6 +69,14 @@ func (s *Server) createUser() http.HandlerFunc {
 func (s *Server) updateUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, _ := uuid.Parse(getField(r, 0))
+
+		// only allow logged in user to update logged in user
+		userid := r.Context().Value("user").(uuid.UUID)
+		if userid != id {
+			http.Error(w, "Invalid request", http.StatusForbidden)
+			return
+		}
+
 		u := &gotodo.User{}
 		if err := json.NewDecoder(r.Body).Decode(u); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -91,6 +99,13 @@ func (s *Server) updateUser() http.HandlerFunc {
 func (s *Server) deleteUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, _ := uuid.Parse(getField(r, 0))
+
+		// only allow logged in user to delete logged in user
+		userid := r.Context().Value("user").(uuid.UUID)
+		if userid != id {
+			http.Error(w, "Invalid request", http.StatusForbidden)
+			return
+		}
 
 		if er := s.store.DeleteUser(id); er != nil {
 			http.Error(w, er.Error(), http.StatusBadRequest)
