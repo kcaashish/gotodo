@@ -1,0 +1,14 @@
+BACKEND_PORT={insert}
+
+DB_HOST={inser}
+DB_PORT={insert}
+DB_USER={insert}
+DB_PASSWORD={insert}
+DB_NAME={insert}
+DB_URI={insert}
+
+PG_PASSWORD={insert}
+
+TOKEN_PASSWORD={insert}
+ACCESS_TOKEN_DURATION={insert}
+REFRESH_TOKEN_DURATION={insert}
