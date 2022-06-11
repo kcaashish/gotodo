@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -60,8 +61,6 @@ func (s *Server) createTodoList() http.HandlerFunc {
 		userid := r.Context().Value("user").(uuid.UUID)
 		todolist.UserID = userid
 
-		todolist.CreatedDate = time.Now().Local()
-		todolist.UpdatedDate = time.Now().Local()
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -97,7 +96,10 @@ func (s *Server) updateTodoList() http.HandlerFunc {
 
 		// if valid userid, proceed with update
 		todolist := &gotodo.TodoList{}
-		todolist.UpdatedDate = time.Now().Local()
+		todolist.UpdatedAt = sql.NullTime{
+			Time:  time.Now().Local(),
+			Valid: true,
+		}
 		if err := json.NewDecoder(r.Body).Decode(todolist); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

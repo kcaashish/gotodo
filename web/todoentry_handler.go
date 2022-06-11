@@ -1,6 +1,7 @@
 package web
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -42,8 +43,7 @@ func (s *Server) createTodoEntry() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		te := &gotodo.TodoEntry{}
 		te.ID = uuid.New()
-		te.CreatedDate = time.Now().Local()
-		te.UpdatedDate = time.Now().Local()
+
 		if err := json.NewDecoder(r.Body).Decode(te); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -63,7 +63,12 @@ func (s *Server) updateTodoEntry() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, _ := uuid.Parse(getField(r, 0))
 		te := &gotodo.TodoEntry{}
-		te.UpdatedDate = time.Now().Local()
+
+		te.UpdatedAt = sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		}
+
 		if err := json.NewDecoder(r.Body).Decode(te); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
