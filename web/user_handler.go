@@ -26,8 +26,18 @@ func (s *Server) getUser() http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
+		resp := gotodo.UserResponse{
+			ID:                u.ID,
+			UserName:          u.UserName,
+			FirstName:         u.FirstName,
+			LastName:          u.LastName,
+			Email:             u.Email,
+			CreatedAt:         u.CreatedAt,
+			PasswordChangedAt: u.PasswordChangedAt,
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(u)
+		json.NewEncoder(w).Encode(resp)
 	}
 }
 
@@ -61,8 +71,18 @@ func (s *Server) createUser() http.HandlerFunc {
 			return
 		}
 
+		resp := gotodo.UserResponse{
+			ID:                u.ID,
+			UserName:          u.UserName,
+			FirstName:         u.FirstName,
+			LastName:          u.LastName,
+			Email:             u.Email,
+			CreatedAt:         u.CreatedAt,
+			PasswordChangedAt: u.PasswordChangedAt,
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(u)
+		json.NewEncoder(w).Encode(resp)
 	}
 }
 
@@ -77,6 +97,8 @@ func (s *Server) updateUser() http.HandlerFunc {
 			return
 		}
 
+		checkUser, _ := s.store.User(id)
+
 		u := &gotodo.User{}
 		if err := json.NewDecoder(r.Body).Decode(u); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -86,13 +108,27 @@ func (s *Server) updateUser() http.HandlerFunc {
 		hashedPass, _ := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 		u.Password = string(hashedPass)
 
+		if checkUser.Password != u.Password {
+			u.PasswordChangedAt = time.Now()
+		}
+
 		if er := s.store.UpdateUser(id, u); er != nil {
 			http.Error(w, er.Error(), http.StatusInternalServerError)
 			return
 		}
 
+		resp := gotodo.UserResponse{
+			ID:                u.ID,
+			UserName:          u.UserName,
+			FirstName:         u.FirstName,
+			LastName:          u.LastName,
+			Email:             u.Email,
+			CreatedAt:         u.CreatedAt,
+			PasswordChangedAt: u.PasswordChangedAt,
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(u)
+		json.NewEncoder(w).Encode(resp)
 	}
 }
 
@@ -107,12 +143,25 @@ func (s *Server) deleteUser() http.HandlerFunc {
 			return
 		}
 
+		u, _ := s.store.User(id)
+
 		if er := s.store.DeleteUser(id); er != nil {
 			http.Error(w, er.Error(), http.StatusBadRequest)
 			return
 		}
 
-		w.WriteHeader(http.StatusNoContent)
+		resp := gotodo.UserResponse{
+			ID:                u.ID,
+			UserName:          u.UserName,
+			FirstName:         u.FirstName,
+			LastName:          u.LastName,
+			Email:             u.Email,
+			CreatedAt:         u.CreatedAt,
+			PasswordChangedAt: u.PasswordChangedAt,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resp)
 	}
 }
 
@@ -163,6 +212,7 @@ func (s *Server) userLogin() http.HandlerFunc {
 			FirstName:         u.FirstName,
 			LastName:          u.LastName,
 			Email:             u.Email,
+			CreatedAt:         u.CreatedAt,
 			PasswordChangedAt: u.PasswordChangedAt,
 		}
 
