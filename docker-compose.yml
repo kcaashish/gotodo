@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: gotodo-dev
+    image: gotodo-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"

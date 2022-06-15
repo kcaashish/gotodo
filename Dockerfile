@@ -12,6 +12,6 @@ COPY . .
 
 RUN CGO_ENABLED=0 go build -o /gotodo ./cmd/gotodo/main.go
 
-EXPOSE 8000
+EXPOSE ${BACKEND_PORT}
 
 CMD ["/gotodo"]
